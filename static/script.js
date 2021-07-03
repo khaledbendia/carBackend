@@ -4,7 +4,7 @@ var globalURL="http://127.0.0.1:8000/";
 var file;
 
 var xhr;
-
+var firebaseStorage;
 var brand = ["Renault","Peugeot","Mercedes","BMW","Volkswagen","Kia"];
 var model = [
 ["ARKANA","Captur","Clio","Espace","Express","Scenic","Twingo","Kangoo"],
@@ -288,7 +288,10 @@ var resultItem =
 
 function getCarsFilter(filter)
 {
-    xhr.abort();
+    if (xhr != null){
+        xhr.abort();
+        xhr = null;
+    }
 	$("#spinnerResult").removeClass("d-none");
 	$("#noCarsContainer").addClass("d-none");
 	$("#noConnectionContainer").addClass("d-none");
@@ -309,8 +312,12 @@ function getCarsFilter(filter)
 				$("#noCarsContainer").removeClass("d-none");
 				return;
 			}
+			/*if (xhr != null){
+                  xhr.abort();
+                  xhr = null;
+            }*/
 			for(var i = 0; i < json.length; i++) {
-				oneCarShow(json[i].pk,json[i].fields);
+				oneCarShow(xhr,json[i].pk,json[i].fields);
 			}
 
 		},
@@ -318,13 +325,15 @@ function getCarsFilter(filter)
 		{
 			$("#spinnerResult").addClass("d-none");
 			$("#noConnectionContainer").removeClass("d-none");
-			alert("error");	
+			//alert("error");
 		}
 	});
 }
-function oneCarShow(pk,obj)
+function oneCarShow(xhr,pk,obj)
 {
-	firebase.storage().ref(obj.imageurl).getDownloadURL()
+
+	firebaseStorage = firebase.storage().ref(obj.imageurl);
+	firebaseStorage.getDownloadURL()
 	.then((url) => {
 		var item = $(resultItem).clone();
 		try{
@@ -332,7 +341,8 @@ function oneCarShow(pk,obj)
 				$(item).find(".votreAnnonceContainer").removeClass("d-none");
 		}catch(e)
 		{}
-		
+		if(this.xhr != xhr)
+		return;
 		$(item).attr("data",pk);
 		$(item).attr("src",url);
 		$(item).find(".imageUrl").attr("src",url);
@@ -342,23 +352,8 @@ function oneCarShow(pk,obj)
 		$(item).find(".kilo").html(obj.kilo+" KM");
 		$(item).find(".annee").html(obj.year);
 		$(item).find(".phone").html(obj.phone);
-
-		//if($("#result .resultItem").length==0)
 		$("#result").append(item);
-		/*else
-		{
-			for(var i=0;i<$("#result .resultItem").length;i++)
-			{
-				//alert($("#result .resultItem").eq(i).attr("data"));
-				
-				if(parseInt($("#result .resultItem").eq(i).attr("data"))<parseInt($(item).attr("data")))
-				{
-					$("#result").append(item);
-					//$(item).insertBefore($("#result .resultItem").eq(i));
-					break;
-				}
-			}
-		}*/
+
 
 
 	})
@@ -383,7 +378,7 @@ function getCars()
 				return;
 			}
 			for(var i = 0; i <json.length; i++) {
-				oneCarShow(json[i].pk,json[i].fields);
+				oneCarShow(xhr,json[i].pk,json[i].fields);
 			}
 
 		},
@@ -391,7 +386,7 @@ function getCars()
 		{
 			$("#spinnerResult").addClass("d-none");
 			$("#noConnectionContainer").removeClass("d-none");
-			alert("error");	
+			//alert("error");
 		}
 	});
 }
