@@ -3,7 +3,7 @@ var regNumbers = /^\d+$/;
 var globalURL="http://127.0.0.1:8000/";
 var file;
 
-var requestUID;
+var xhr;
 
 var brand = ["Renault","Peugeot","Mercedes","BMW","Volkswagen","Kia"];
 var model = [
@@ -134,8 +134,7 @@ var resultItem =
 
 					$("#header>div:eq(2)").addClass("d-none");
 					$("#header>div:eq(1)").removeClass("d-none");
-				    requestUID = uuidv4();
-					getCars(requestUID);
+					getCars();
 				},
 				error:function(error)
 				{
@@ -152,8 +151,7 @@ var resultItem =
 		}
 		else
 		{
-		    requestUID = uuidv4();
-			getCars(requestUID);
+			getCars();
 			$("#header>div:eq(2)").addClass("d-none");
 			$("#header>div:eq(0)").removeClass("d-none");
 		}		
@@ -283,26 +281,24 @@ var resultItem =
 				filter[key] = val ;
 			}
 		}
-		requestUID = uuidv4();
-		getCarsFilter(requestUID,filter);
+		getCarsFilter(filter);
 	});
 
 });
 
-function getCarsFilter(request,filter)
+function getCarsFilter(filter)
 {
+    xhr.abort();
 	$("#spinnerResult").removeClass("d-none");
 	$("#noCarsContainer").addClass("d-none");
 	$("#noConnectionContainer").addClass("d-none");
 	$("#result .resultItem").remove();
-	$.ajax({
+	xhr = $.ajax({
 		url: globalURL+"getCarsFilter/",
 		dataType: 'text',
 		type: "POST",
 		data: filter,
 		success: function(data){
-		    if(request!=requestUID)
-		    return;
 			$("#spinnerResult").addClass("d-none");
 
 			var json = JSON.parse(data);
@@ -370,16 +366,14 @@ function oneCarShow(pk,obj)
 		alert(error);
 	});
 }
-function getCars(request)
+function getCars()
 {
-	$.ajax({
+	xhr = $.ajax({
 		url: globalURL+"getCars/",
 		dataType: 'text',
 		type: "POST",
 		data: {},
 		success: function(data){
-		    if(request!=requestUID)
-		    return;
 			$("#spinnerResult").addClass("d-none");
 			var json = JSON.parse(data);
 			if(json.length==0)
