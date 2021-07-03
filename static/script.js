@@ -1,6 +1,6 @@
 var regexEmail = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
 var regNumbers = /^\d+$/;
-var globalURL="http://127.0.0.1:8000/";
+var globalURL=STATIC_URL;/*"http://127.0.0.1:8000/"*/;
 var file;
 
 var xhr;
@@ -228,6 +228,7 @@ var resultItem =
 
 		});	
 	});
+
 	//ajouter
 	$(".ajouterVoiture").on("click",function(){
 		if(firebase.auth().currentUser)
