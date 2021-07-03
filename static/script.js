@@ -288,7 +288,8 @@ var resultItem =
 function getCarsFilter(filter)
 {
 	$("#spinnerResult").removeClass("d-none");
-
+	$("#noCarsContainer").addClass("d-none");
+	$("#noConnectionContainer").addClass("d-none");
 	$("#result .resultItem").remove();
 	$.ajax({
 		url: globalURL+"getCarsFilter/",
@@ -297,8 +298,7 @@ function getCarsFilter(filter)
 		data: filter,
 		success: function(data){
 			$("#spinnerResult").addClass("d-none");
-			$("#noCarsContainer").addClass("d-none");
-			$("#noConnectionContainer").addClass("d-none");
+
 			var json = JSON.parse(data);
 			console.log(json);
 			if(json.length==0)
