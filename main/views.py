@@ -6,7 +6,14 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
 from main.models import user, car
+from django.template import loader
 
+
+@csrf_exempt
+def main(request):
+    template = loader.get_template('index.html')
+    context = {}
+    return HttpResponse(template.render(context, request))
 
 @csrf_exempt
 def createUser(request):
